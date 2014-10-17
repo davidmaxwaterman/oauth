@@ -3,22 +3,28 @@
   "name": "oauth",
   "short_name": "oauth",
   "description": "Description for oauth",
-
   "version": "0.0.1.0",
-
   "icons": {
-    "16": "assets/icon_16.png",
-    "128": "assets/icon_128.png"
-  },
-
-  "app": {
-    "background": {
-      "scripts": ["background.js"]
-    }
+    "16": "images/icon_16.png",
+    "128": "images/icon_128.png"
   },
   "permissions": [
-    "identity"
+    "activeTab",
+    "management",
+    "declarativeContent",
+    "tabs",
+    "identity",
+    "<all_urls>"
   ],
+  "page_action": {
+    "default_icon": "images/icon-16.png"
+  },
+  "background": {
+    "scripts": [
+      "event_page.js"
+    ],
+    "persistent": false
+  },
   "oauth2": {
     "client_id": "353827414707-rt33qbe8pi3v014t9ucd5auj2a4iqfu3.apps.googleusercontent.com",
     "scopes": [
