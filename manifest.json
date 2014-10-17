@@ -14,6 +14,8 @@
     "declarativeContent",
     "tabs",
     "identity",
+    "https://www.facebook.com/",
+    "https://graph.facebook.com/",
     "<all_urls>"
   ],
   "page_action": {
