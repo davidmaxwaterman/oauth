@@ -1,0 +1,242 @@
+<link rel='import' href='bower_components/polymer/polymer.html'>
+<link rel='import' href='cp-auth.html'>
+
+<polymer-element name="auth-test">
+  <template>
+    <section>
+      <h5>Google</h5>
+      <button id='google_authorize' on-click='{{authorize}}'>Authorise google</button>
+    </section>
+
+    <section>
+      <h5>Facebook</h5>
+      <div id='facebook_user_info'></div>
+      <button id='facebook_signin' style='display:none'>Sign in</button>
+      <button id='facebook_getalbums' style='display:none'>Get albums</button>
+      <button id='facebook_revoke' style='display:none'>Revoke token</button>
+    </section>
+
+    <section id='photos'>
+    </section>
+
+    <cp-auth id='authorizer' on-accesstoken='{{onAccessToken}}'></cp-auth>
+  </template>
+
+  <script>
+  (function authTest() {
+
+    /*
+      google apis - can specify scope in the first parameter, or just use the ones in the manifest
+      chrome.identity.getAuthToken({'interactive': true}, function(token) {
+        console.log(token);
+      });
+    */
+
+    var self = null;
+    var tokenFetcher = null;
+
+    var User = {
+      id:'',
+      firstname:'',
+      familyname:'',
+      email:''
+    };
+
+    var xhrWithAuth = function (method, url, interactive, callback) {
+      var retry = true;
+      getToken();
+
+      function getToken() {
+        getTokenFromAuthorizer(function(token) {
+          self.access_token = token;
+          requestStart(self);
+        });
+      }
+
+      function requestStart(self) {
+        console.log('AT:requestStart:self.access_token:',self.access_token);
+        var xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + self.access_token);
+        xhr.onload = requestComplete;
+        xhr.send();
+      }
+
+      function requestComplete() {
+        if (this.status != 200 && retry) {
+          retry = false;
+          removeCachedTokenFromAuthorizer(self.access_token);
+          self.access_token = null;
+          getToken();
+        } else {
+          callback(this.status, this.response);
+        }
+      }
+    };
+
+    var getAlbum = function (interactive,album) {
+      xhrWithAuth('GET',
+                  'https://graph.facebook.com/v2.1/'+album.id+'/photos?access_token='+self.access_token,
+                  interactive,
+                  onAlbumFetched);
+    };
+
+    var getAlbums = function (interactive) {
+      xhrWithAuth('GET',
+                  'https://graph.facebook.com/v2.1/me/albums?access_token='+self.access_token,
+                  interactive,
+                  onAlbumsFetched);
+    };
+
+    var getUserInfo = function (interactive) {
+      xhrWithAuth('GET',
+                  'https://graph.facebook.com/me?access_token='+self.access_token,
+                  interactive,
+                  onUserInfoFetched);
+    };
+
+    // Functions updating the User Interface:
+
+    var showButton = function (button) {
+      button.style.display = 'inline';
+      button.disabled = false;
+    };
+
+    var hideButton = function (button) {
+      button.style.display = 'none';
+    };
+
+    var disableButton = function (button) {
+      button.disabled = true;
+    };
+
+    var onAlbumFetched = function (status, response) {
+      if (status == 200) {
+        var album = JSON.parse(response);
+        console.log('album:',album);
+        for(var i=0;i<album.data.length;i++) {
+          var thisImage=album.data[i].images[0].source
+          var img=document.createElement('img');
+          img.src=thisImage;
+          self.$.photos.appendChild(img);
+        }
+      } else {
+        showButton(self.$.facebook_signin);
+      }
+    };
+
+    var onAlbumsFetched = function (status, response) {
+      if (status == 200) {
+        var albums = JSON.parse(response);
+        for(var i=0;i<albums.data.length;i++) {
+          var album=albums.data[i];
+          getAlbum(true,album);
+        }
+        console.log('albums:',albums);
+      } else {
+        showButton(self.$.facebook_signin);
+      }
+    };
+
+    var onUserInfoFetched = function (status, response) {
+      if (status == 200) {
+        var user_info = JSON.parse(response);
+        // console.log("Got the following user info: " + response);
+        User.id = user_info.id;
+        User.firstname = user_info.first_name;
+        User.familyname = user_info.last_name;
+        User.email = user_info.email;
+        console.log(User);
+        self.$.facebook_user_info.innerHTML = 
+        "<b>Hello " + User.firstname + " " + User.familyname + "</b><br>"
+              + "Your email is: " + User.email + "</b><br>" + 
+              "Link to your Facebook page is:" + user_info.link;
+        hideButton(self.$.facebook_signin);
+        showButton(self.$.facebook_getalbums);
+      } else {
+        showButton(self.$.facebook_signin);
+      }
+    };
+
+    var removeCachedTokenFromAuthorizer = function (token) {
+      self.$.authorizer.clearCachedToken(token);
+    };
+
+    var getTokenFromAuthorizer = function (callback) {
+      console.log('AT:getTokenFromAuthorizer');
+
+      self.callback = callback;
+
+      self.$.authorizer.getToken('facebook');
+    };
+
+    var interactiveSignIn = function () {
+      disableButton(self.$.facebook_signin);
+      getTokenFromAuthorizer(function(token) {
+        console.log('AT:got token:',token);
+        self.access_token = token;
+        getUserInfo(true);
+      });
+    };
+
+    // function revokeToken() {
+      // We are opening the web page that allows user to revoke their token.
+      // window.open('https://github.com/settings/applications');
+      // self.$.facebook_user_info.textContent = '';
+      // hideButton(self.$.facebook_revoke);
+      // showButton(self.$.facebook_signin);
+    // }
+
+    var onload = function () {
+      self.$.facebook_signin.addEventListener('click',function() {
+        console.log('AT:signin clicked');
+        interactiveSignIn();
+      });
+
+      self.$.facebook_getalbums.addEventListener('click',function() {
+        getAlbums(true);
+      });
+
+      // self.$.facebook_revoke.addEventListener('click',function() {
+      //   revokeToken();
+      // });
+      // console.log(self.$.facebook_signin, self.$.facebook_revoke, self.$.facebook_user_info);
+      showButton(self.$.facebook_signin);
+      // getUserInfo(false);
+    };
+
+    Polymer({
+
+      created: function() {
+        self = this;
+        this.callback = function() {
+          console.log('AT:this shouldt be called');
+        };
+        this.access_token = null;
+      },
+
+      ready: function() {
+        onload();
+      },
+
+      /*
+      authorize: function() {
+        this.$.authorizer.getToken('google');
+      },
+
+      */
+
+      onAccessToken: function(e) {
+        var token=e.detail;
+        this.access_token=token;
+        console.log('AT:received "accesstoken":',e.detail);
+        if (self.callback) {
+          self.callback(e.detail);
+        }
+      },
+
+    }); // Polymer()
+  })();
+
+  </script>
+</polymer-element>

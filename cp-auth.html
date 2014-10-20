@@ -1,0 +1,69 @@
+<link rel='import' href='bower_components/polymer/polymer.html'>
+
+<polymer-element name="cp-auth">
+  <template>
+  </template>
+
+  <script>
+    (function authTest () {
+
+    Polymer({
+
+      created: function () {
+        this.tokens = {};
+      },
+
+      ready: function () {
+        var self=this;
+        document.addEventListener('fromeventpage',function (e) {
+          if (e.detail.type==='accesstoken') {
+            var token=e.detail.data.token;
+            self.tokens['facebook']=token; // TODO: add 'service' property
+            self.fire('accesstoken',token);
+          }
+        });
+      },
+
+      getToken: function (service) {
+        var self=this;
+        service = service || 'google';
+        if (this.tokens[service]) {
+          self.fire('accesstoken',self.tokens[service]);
+        } else {
+          document.dispatchEvent(
+            new CustomEvent('toeventpage',
+              {
+                detail: {
+                  type:'gettoken',
+                  data: {
+                    service: service
+                  }
+                }
+              }
+            )
+          );
+        }
+      },
+
+      clearCachedToken: function (token) {
+        // remove from this.tokens 
+        // need 'service' property or search the hash
+        document.dispatchEvent(
+          new CustomEvent('toeventpage',
+            {
+              detail: {
+                type: 'removecachedtoken',
+                data: {
+                  token: token
+                }
+              }
+            }
+          )
+        );
+      },
+
+    }); // Polymer()
+  })();
+
+  </script>
+</polymer-element>
