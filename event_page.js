@@ -41,7 +41,7 @@ chrome.runtime.onMessage.addListener(function(message,sender) {
       var service = message.data.service;
       switch (service) {
         case 'facebook':
-          getToken();
+          getToken(true);
           break;
         case 'google':
           break;
