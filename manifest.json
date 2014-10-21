@@ -41,5 +41,8 @@
       "https://www.googleapis.com/auth/drive"
     ]
   },
+  "externally_connectable": {
+    "matches": ["http://localhost:8000/index.html"]
+  },
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkJNzLXCkftFZ4qFUb6abjOzkd/uqHoWl7hcNjEGybRfqCnYTQbnvj5zamYRgTL2+wxPW8Og/cASvDOZ3g7W9nvaKgRd/NTHNx0SiaC0pBF0SVwY2rzK/moCEAHkW3BW4OWRjiMxpsMNEIKgnOydjxVdmuZ0IgR/JvjmGQtZBcKrAwVMqWJGnMBIN/ec0yR8ZD+a+DsZKgNDretF8bHLJXYRe9DKwkPvZSjmGy7QgKdA30vbdJOoCwHVJe3/8TKaHblAVgyIDBGL7AAU59B4fc+nNYQdDWkF/HQg9eeVmh5iLKRk9q3Hw0MCCREXWJQ0O+gz0opSx8jw282abgpBDcwIDAQAB"
 }

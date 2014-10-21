@@ -30,38 +30,28 @@
         if (this.tokens[service]) {
           self.fire('accesstoken',self.tokens[service]);
         } else {
-          document.dispatchEvent(
-            new CustomEvent('toeventpage',
-              {
-                detail: {
-                  component:'auth',
-                  type:'gettoken',
-                  data: {
-                    service: service
-                  }
-                }
-              }
-            )
-          );
+          var message={
+            component:'auth',
+            type:'gettoken',
+            data: {
+              service: service
+            }
+          };
+          chrome.runtime.sendMessage('mflgofodofckkigdcfmbliekjmhoeien',message);
         }
       },
 
       clearCachedToken: function (token) {
         // remove from this.tokens 
         // need 'service' property or search the hash
-        document.dispatchEvent(
-          new CustomEvent('toeventpage',
-            {
-              detail: {
-                component:'auth',
-                type: 'removecachedtoken',
-                data: {
-                  token: token
-                }
-              }
-            }
-          )
-        );
+        var message={
+          component:'auth',
+          type: 'removecachedtoken',
+          data: {
+            token: token
+          }
+        };
+        chrome.runtime.sendMessage('mflgofodofckkigdcfmbliekjmhoeien',message);
       },
 
     }); // Polymer()

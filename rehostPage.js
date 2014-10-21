@@ -8,10 +8,4 @@
     sendResponse('received, thanks');
   });
 
-  // relay all messages to event page
-  document.addEventListener('toeventpage',function(e) {
-    var message = e.detail;
-    chrome.runtime.sendMessage(message);
-  });
-
 })();
