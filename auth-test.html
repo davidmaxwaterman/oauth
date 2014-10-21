@@ -12,7 +12,6 @@
       <h5>Facebook</h5>
       <div id='facebook_user_info'></div>
       <button id='facebook_signin' style='display:none'>Sign in</button>
-      <button id='facebook_getalbums' style='display:none'>Get albums</button>
       <button id='facebook_revoke' style='display:none'>Revoke token</button>
     </section>
 
@@ -152,7 +151,7 @@
               + "Your email is: " + User.email + "</b><br>" + 
               "Link to your Facebook page is:" + user_info.link;
         hideButton(self.$.facebook_signin);
-        showButton(self.$.facebook_getalbums);
+        getAlbums(true);
       } else {
         showButton(self.$.facebook_signin);
       }
@@ -193,9 +192,6 @@
         interactiveSignIn();
       });
 
-      self.$.facebook_getalbums.addEventListener('click',function() {
-        getAlbums(true);
-      });
 
       // self.$.facebook_revoke.addEventListener('click',function() {
       //   revokeToken();

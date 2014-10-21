@@ -18,6 +18,13 @@
     "https://graph.facebook.com/",
     "<all_urls>"
   ],
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:8000/index.html"],
+      "run_at": "document_start",
+      "js": ["rehostPage.js"]
+    }
+  ],
   "page_action": {
     "default_icon": "images/icon-16.png"
   },

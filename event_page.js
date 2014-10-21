@@ -23,18 +23,6 @@ chrome.runtime.onInstalled.addListener(function() {
   });
 });
 
-chrome.pageAction.onClicked.addListener(function(tab) {
-  if (tab.url.indexOf('chrome-devtools://') === -1 ) {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.executeScript(null, {file: "rehostPage.js"}, function(result) {
-        if (chrome.runtime.lastError) {
-          console.log('EP:error executing content script:',chrome.runtime.lastError.message);
-        }
-      });
-    });
-  }
-});
-
 chrome.runtime.onMessage.addListener(function(message,sender) {
   switch (message.type) {
     case 'gettoken':
@@ -58,8 +46,8 @@ chrome.runtime.onMessage.addListener(function(message,sender) {
 
 var access_token;
 
-var clientId = $CLIENT_ID
-var clientSecret = $CLIENT_SECRET;
+var clientId = "777716082266761";
+var clientSecret = "0c2a747598514b3fa6dc2d920f7e1604";
 var redirectUri = 'https://' + chrome.runtime.id +
                   '.chromiumapp.org/provider_cb';
 var redirectRe = new RegExp(redirectUri + '[#\?](.*)');
