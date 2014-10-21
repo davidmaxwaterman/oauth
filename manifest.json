@@ -22,7 +22,7 @@
     {
       "matches": ["http://localhost:8000/index.html"],
       "run_at": "document_start",
-      "js": ["rehostPage.js"]
+      "js": [ "rehostPage.js" ]
     }
   ],
   "page_action": {
@@ -30,7 +30,8 @@
   },
   "background": {
     "scripts": [
-      "event_page.js"
+      "ep_main.js",
+      "ep_auth.js"
     ],
     "persistent": false
   },
