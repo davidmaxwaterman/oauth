@@ -30,8 +30,8 @@
   },
   "background": {
     "scripts": [
-      "ep_main.js",
-      "ep_auth.js"
+      "ep-main.js",
+      "ep-auth.js"
     ],
     "persistent": false
   },
