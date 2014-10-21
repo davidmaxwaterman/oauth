@@ -16,7 +16,7 @@
       ready: function () {
         var self=this;
         document.addEventListener('fromeventpage',function (e) {
-          if (e.detail.type==='accesstoken') {
+          if (e.detail.component==='auth' && e.detail.type==='accesstoken') {
             var token=e.detail.data.token;
             self.tokens['facebook']=token; // TODO: add 'service' property
             self.fire('accesstoken',token);
@@ -34,6 +34,7 @@
             new CustomEvent('toeventpage',
               {
                 detail: {
+                  component:'auth',
                   type:'gettoken',
                   data: {
                     service: service
@@ -52,6 +53,7 @@
           new CustomEvent('toeventpage',
             {
               detail: {
+                component:'auth',
                 type: 'removecachedtoken',
                 data: {
                   token: token
